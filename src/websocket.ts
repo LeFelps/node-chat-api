@@ -49,9 +49,10 @@ io.on("connection", (socket) => {
     const chatRoom = chatRooms.find((chatRoom) => chatRoom.id === chatRoomId);
     if (chatRoom) {
       if (message.charAt(0) === "/") {
-        const command = message.split(" ")[0];
-        const argument = message.split(" ")[1];
+        const commandArguments = message.split(" ");
+        const command = commandArguments[0];
         if (command === "/tictactoe") {
+          const name = commandArguments.slice(1).join(' ');
           const gameId = uuidv4();
           const game = {
             id: gameId,
@@ -61,7 +62,7 @@ io.on("connection", (socket) => {
 
           chatRoom.users.forEach((user) => {
             io.to(user).emit("message", {
-              message: argument || "Tic Tac Toe",
+              message: name || "Tic Tac Toe",
               sender: socket.id,
               timestamp: Date.now(),
               game: game,
