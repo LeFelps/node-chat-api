@@ -95,11 +95,13 @@ io.on("connection", (socket) => {
   });
 
   socket.on("startSearch", (callback) => {
-    userQueue.push(socket.id);
-    createChatConnection();
-    callback({
-      status: "success"
-    })
+    if (!userQueue.includes(socket.id)) {
+      userQueue.push(socket.id);
+      createChatConnection();
+      callback({
+        status: "success"
+      })
+    }
   });
 
   socket.on("stopSearch", (callback) => {
