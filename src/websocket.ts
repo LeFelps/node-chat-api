@@ -44,17 +44,51 @@ function endChat(socketId: string) {
   }
 }
 
-
 io.on("connection", (socket) => {
-
   socket.on("message", (chatRoomId: string, message: string) => {
     const chatRoom = chatRooms.find((chatRoom) => chatRoom.id === chatRoomId);
     if (chatRoom) {
+      if (message.charAt(0) === "/") {
+        const command = message.split(" ")[0];
+        const argument = message.split(" ")[1];
+        if (command === "/tictactoe") {
+          const gameId = uuidv4();
+          const game = {
+            id: gameId,
+            type: "TICTACTOE",
+            moves: [],
+          }
+
+          chatRoom.users.forEach((user) => {
+            io.to(user).emit("message", {
+              message: argument || "Tic Tac Toe",
+              sender: socket.id,
+              timestamp: Date.now(),
+              game: game,
+            });
+          });
+        }
+        return;
+      } else {
+        chatRoom.users.forEach((user) => {
+          io.to(user).emit("message", {
+            message: message,
+            sender: socket.id,
+            timestamp: Date.now(),
+          });
+        });
+      }
+    }
+  });
+
+  socket.on("gameMove", (chatRoomId, { gameId, player, move }: { gameId: string, player: string, move: string }) => {
+    const chatRoom = chatRooms.find((chatRoom) => chatRoom.id === chatRoomId);
+    if (chatRoom) {
       chatRoom.users.forEach((user) => {
-        io.to(user).emit("message", {
-          message: message,
-          sender: socket.id,
-          timestamp: Date.now(),
+        io.to(user).emit("gameMove", {
+          gameId: gameId,
+          player: player,
+          move: move
         });
       });
     }
