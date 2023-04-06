@@ -1,7 +1,7 @@
 import { httpServer } from "./http";
 import "./websocket";
 
-const port = 3333
+const port = 10000
 
 httpServer.listen({
   host: "0.0.0.0",
