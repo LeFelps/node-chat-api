@@ -1,11 +1,8 @@
 import { httpServer } from "./http";
 import "./websocket";
 
-const port = 10000
+const port = process.env.PORT || 3333;
 
-httpServer.listen({
-  host: "0.0.0.0",
-  port: port,
-}, () =>
+httpServer.listen(port, () =>
   console.log(`Server is running on port ${port}`)
 );
